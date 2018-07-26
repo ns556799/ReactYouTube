@@ -1,8 +1,33 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import YTSearch from "youtube-api-search";
+import VideoList from "./components/videoList";
+import VideoDetail from "./components/videoDetail";
+
+import SearchBar from "./components/searchBar";
+import logo from "./logo.svg";
+import "./App.css";
+const API_KEY = "AIzaSyCVr1Cly8J4QO3nzPB-DOkee6YdRVAYAek";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      videos: [],
+      selectedVideo: null
+    };
+
+    this.videoSearch("surfboarding");
+  }
+
+  videoSearch(term) {
+    YTSearch({ key: API_KEY, term }, videos => {
+      this.setState({
+        videos: videos,
+        selectedVideo: videos[0]
+      });
+    });
+  }
+
   render() {
     return (
       <div className="App">
@@ -10,6 +35,16 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
+        <div className="page-wrap">
+          <SearchBar onSearchTermChange={term => this.videoSearch(term)} />
+          <VideoDetail video={this.state.selectedVideo} />
+          <VideoList
+            onVideoSelect={selectedVideo =>
+              this.setState({ selectedVideo: selectedVideo })
+            }
+            videos={this.state.videos}
+          />
+        </div>
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
